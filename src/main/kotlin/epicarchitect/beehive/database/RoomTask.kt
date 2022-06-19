@@ -3,12 +3,9 @@ package epicarchitect.beehive.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-typealias TaskId = Int
-typealias TaskContent = String
-
 @Entity(tableName = "tasks")
-data class Task(
+data class RoomTask(
     @PrimaryKey(autoGenerate = true)
-    val id: TaskId,
-    val content: TaskContent
+    val id: Int,
+    val content: String
 )

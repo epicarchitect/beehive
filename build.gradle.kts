@@ -71,4 +71,6 @@ dependencies {
     implementation("androidx.room:room-runtime:2.4.2")
     implementation("androidx.room:room-ktx:2.4.2")
     ksp("androidx.room:room-compiler:2.4.2")
+
+    implementation(project(":features:tasks"))
 }

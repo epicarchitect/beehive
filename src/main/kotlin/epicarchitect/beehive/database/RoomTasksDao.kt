@@ -6,15 +6,15 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TasksDao {
+interface RoomTasksDao {
 
     @Insert
-    fun insertTask(task: Task)
+    fun insertTask(task: RoomTask)
 
     @Query("DELETE FROM tasks WHERE id = :id")
-    fun deleteById(id: TaskId)
+    fun deleteById(id: Int)
 
     @Query("SELECT * FROM tasks")
-    fun tasks(): Flow<List<Task>>
+    fun tasks(): Flow<List<RoomTask>>
 
 }

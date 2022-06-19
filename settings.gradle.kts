@@ -12,3 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+include(":features:tasks")
+include(":data:task")

@@ -4,9 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Task::class],
+    entities = [RoomTask::class],
     version = 1
 )
-abstract class AppDatabase : RoomDatabase() {
-    abstract val tasksDao: TasksDao
+abstract class BeehiveRoomDatabase : RoomDatabase() {
+    abstract val tasksDao: RoomTasksDao
 }

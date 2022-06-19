@@ -12,35 +12,37 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import epicarchitect.beehive.database.Task
+import epicarchitect.beehive.data.Task
+import epicarchitect.beehive.data.TaskId
+import epicarchitect.beehive.database.RoomTask
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private val tasksDao by lazy {
-        Beehive.database.tasksDao
-    }
-
-    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BeehiveTheme {
                 Box(Modifier.fillMaxSize()) {
-                    val tasks by tasksDao.tasks().collectAsState(initial = emptyList())
                     val coroutineScope = rememberCoroutineScope()
+                    val taskIdsFeature = remember { Beehive.createTaskIdsFeature(coroutineScope) }
+                    val taskIds by taskIdsFeature.state.collectAsState()
+
 
                     LazyColumn(
                         contentPadding = PaddingValues(
@@ -50,34 +52,8 @@ class MainActivity : ComponentActivity() {
                             end = 8.dp
                         )
                     ) {
-                        items(tasks, key = { it.id }) { item ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItemPlacement()
-                                    .padding(4.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(4.dp),
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(4.dp),
-                                        text = item.content
-                                    )
-
-                                    Text(
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .clickable {
-                                                coroutineScope.launch(Dispatchers.IO) {
-                                                    tasksDao.deleteById(item.id)
-                                                }
-                                            },
-                                        text = "Delete",
-                                        color = Color.Red
-                                    )
-                                }
-                            }
+                        items(taskIds, key = { it }) { taskId ->
+                            TaskItem(taskId)
                         }
                     }
 
@@ -90,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             ),
                         onClick = {
                             coroutineScope.launch(Dispatchers.IO) {
-                                tasksDao.insertTask(Task(0, "test ${(0..99999).random()}"))
+                                Beehive.tasksRepository.insertTask(Task(0, "test ${(0..99999).random()}"))
                             }
                         },
                         content = {
@@ -99,6 +75,50 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LazyItemScope.TaskItem(taskId: TaskId) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val taskContentFeature = remember(taskId) {
+        Beehive.createTaskContentFeature(
+            coroutineScope,
+            taskId
+        )
+    }
+
+    val content by taskContentFeature.state.collectAsState()
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateItemPlacement()
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(4.dp),
+        ) {
+
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = content ?: "null"
+            )
+
+            Text(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .clickable {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            Beehive.tasksRepository.deleteById(taskId)
+                        }
+                    },
+                text = "Delete",
+                color = Color.Red
+            )
         }
     }
 }
