@@ -9,7 +9,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 
@@ -25,10 +24,6 @@ fun BeehiveTheme(
                 primary = colorResource(R.color.brand),
                 primaryVariant = colorResource(R.color.brand),
                 secondary = colorResource(R.color.brand),
-                onSecondary = Color(0xFFF1F1F1),
-                onPrimary = Color(0xFFF1F1F1),
-                onError = Color(0xFFF1F1F1),
-                error = Color(0xFFE48801),
                 background = colorResource(R.color.background_dark)
             )
         } else {
@@ -36,10 +31,6 @@ fun BeehiveTheme(
                 primary = colorResource(R.color.brand),
                 primaryVariant = colorResource(R.color.brand),
                 secondary = colorResource(R.color.brand),
-                onSecondary = Color(0xFF2C2C2C),
-                onPrimary = Color(0xFFF1F1F1),
-                onError = Color(0xFFF1F1F1),
-                error = Color(0xFFff9800),
                 background = colorResource(R.color.background_light)
             )
         },
