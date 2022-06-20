@@ -1,4 +1,4 @@
-package epicarchitect.beehive.feature
+package epicarchitect.beehive.feature.flow
 
 import epicarchitect.beehive.data.Task
 import epicarchitect.beehive.data.TaskId
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface TasksRepository {
 
-    suspend fun insertTask(task: Task)
+    suspend fun saveTask(task: Task)
 
     suspend fun deleteById(id: TaskId)
 

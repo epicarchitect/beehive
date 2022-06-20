@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-include(":features:tasks")
-include(":data:task")
+include(":features")
+include(":data")

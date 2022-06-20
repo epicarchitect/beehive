@@ -2,13 +2,14 @@ package epicarchitect.beehive
 
 import android.app.Application
 import androidx.room.Room
+import epicarchitect.beehive.data.Task
+import epicarchitect.beehive.data.TaskContent
 import epicarchitect.beehive.data.TaskId
 import epicarchitect.beehive.database.BeehiveRoomDatabase
-import epicarchitect.beehive.feature.TaskContentFeature
-import epicarchitect.beehive.feature.TaskIdsFeature
-import epicarchitect.beehive.feature.TasksRepository
+import epicarchitect.beehive.feature.TikTik
+import epicarchitect.beehive.feature.flow.TasksRepository
 import epicarchitect.beehive.impl.TasksRepositoryImpl
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.map
 
 class Beehive : Application() {
 
@@ -26,24 +27,29 @@ class Beehive : Application() {
                 .build()
         }
 
-        val tasksRepository: TasksRepository by lazy {
+        private val tasksRepository: TasksRepository by lazy {
             TasksRepositoryImpl(database.tasksDao)
         }
 
-        fun createTaskIdsFeature(
-            coroutineScope: CoroutineScope
-        ) = TaskIdsFeature(
-            tasksRepository,
-            coroutineScope
+        fun taskContentFlow(taskId: TaskId) = epicarchitect.beehive.feature.flow.taskContentFlow(
+            tasksRepository.tasksFlow().map { it.find { it.id == taskId } },
+            TikTik.everySecond()
         )
 
-        fun createTaskContentFeature(
-            coroutineScope: CoroutineScope,
-            taskId: TaskId
-        ) = TaskContentFeature(
-            tasksRepository,
-            coroutineScope,
-            taskId
+        fun taskIdsFlow() = epicarchitect.beehive.feature.flow.taskIdsFlow(
+            tasksRepository.tasksFlow()
+        )
+
+        fun taskSavingFlow(content: TaskContent) = epicarchitect.beehive.feature.flow.taskSavingFlow(
+            save = {
+                tasksRepository.saveTask(Task(0, content))
+            }
+        )
+
+        fun taskDeletionFlow(taskId: TaskId) = epicarchitect.beehive.feature.flow.taskDeletionFlow(
+            delete = {
+                tasksRepository.deleteById(taskId)
+            }
         )
     }
 }
